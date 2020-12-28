@@ -1,7 +1,7 @@
 import torch
 from models import Encoder, Generator
 from data_loader import test_dataloader
-from utils import plot_image_grid
+from utils import plot_image_grid, save_images
 from parameters import *
 
 
@@ -38,3 +38,4 @@ def validate_models(channels):
         reconstructed_images[NUM_CHANNELS] = reconstructed_image
 
     plot_image_grid(test_batch, reconstructed_images, NUM_IMAGES_GRID)
+    save_images(test_batch, reconstructed_images)

@@ -1,3 +1,5 @@
+import os
+import datetime
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from parameters import *
@@ -73,3 +75,23 @@ def plot_image_grid(test_batch, reconstructed_images, num_images):
 
     plt.savefig("../results/result.png")
     plt.show()
+
+
+def save_images(test_batch, reconstructed_images):
+    """
+    Plot image grid during validation
+    :param test_batch: Test images set
+    :param reconstructed_images: Reconstructed images set
+    :return: None
+    """
+
+    PATH = f"../results/{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+    os.makedirs(PATH, exist_ok=True)
+
+    for i in range(len(test_batch)):
+        test_image = (test_batch[i].cpu().detach().permute(1, 2, 0) * STD) + MEAN
+        plt.imsave(f"{PATH}/original_image.png", test_image.numpy())
+
+        for channel in reconstructed_images.keys():
+            rec_image = (reconstructed_images[channel][i].cpu().detach().permute(1, 2, 0) * STD) + MEAN
+            plt.imsave(f"{PATH}/image_{channel}.png", rec_image.numpy())
