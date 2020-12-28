@@ -154,4 +154,4 @@ def train():
 
     print(f"Completed Training at {datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}")
 
-    return encoder, generator, discriminator
+    return encoder, generator

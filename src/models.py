@@ -8,22 +8,23 @@ class Encoder(nn.Module):
     Encoder model
     """
 
-    def __init__(self):
+    def __init__(self, num_channels=NUM_CHANNELS):
         super(Encoder, self).__init__()
 
-        self.enc_conv_1 = nn.Sequential(
+        self.num_channels = num_channels
+        self.e_conv_1 = nn.Sequential(
             nn.ZeroPad2d((1, 2, 1, 2)),
             nn.Conv2d(in_channels=3, out_channels=64, kernel_size=(5, 5), stride=(2, 2)),
             nn.LeakyReLU()
         )
 
-        self.enc_conv_2 = nn.Sequential(
+        self.e_conv_2 = nn.Sequential(
             nn.ZeroPad2d((1, 2, 1, 2)),
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(5, 5), stride=(2, 2)),
             nn.LeakyReLU()
         )
 
-        self.enc_block_1 = nn.Sequential(
+        self.e_block_1 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -32,7 +33,7 @@ class Encoder(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.enc_block_2 = nn.Sequential(
+        self.e_block_2 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -40,7 +41,7 @@ class Encoder(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.enc_block_3 = nn.Sequential(
+        self.e_block_3 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -49,19 +50,19 @@ class Encoder(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.enc_conv_3 = nn.Sequential(
-            nn.Conv2d(in_channels=128, out_channels=NUM_CHANNELS, kernel_size=(5, 5), stride=(1, 1),
+        self.e_conv_3 = nn.Sequential(
+            nn.Conv2d(in_channels=128, out_channels=num_channels, kernel_size=(5, 5), stride=(1, 1),
                       padding=(2, 2)),
             nn.Tanh()
         )
 
     def forward(self, x):
-        ec_1 = self.enc_conv_1(x)
-        ec_2 = self.enc_conv_2(ec_1)
-        eblock_1 = self.enc_block_1(ec_2) + ec_2
-        eblock_2 = self.enc_block_2(eblock_1) + eblock_1
-        eblock_3 = self.enc_block_3(eblock_2) + eblock_2
-        ec_3 = self.enc_conv_3(eblock_3)
+        ec_1 = self.e_conv_1(x)
+        ec_2 = self.e_conv_2(ec_1)
+        eblock_1 = self.e_block_1(ec_2) + ec_2
+        eblock_2 = self.e_block_2(eblock_1) + eblock_1
+        eblock_3 = self.e_block_3(eblock_2) + eblock_2
+        ec_3 = self.e_conv_3(eblock_3)
 
         return ec_3
 
@@ -71,18 +72,19 @@ class Generator(nn.Module):
     Generator - Decoder Model
     """
 
-    def __init__(self):
+    def __init__(self, num_channels=NUM_CHANNELS):
         super(Generator, self).__init__()
 
-        self.dec_upconv_1 = nn.Sequential(
-            nn.Conv2d(in_channels=NUM_CHANNELS, out_channels=64, kernel_size=(3, 3), stride=(1, 1)),
+        self.num_channels = num_channels
+        self.d_up_conv_1 = nn.Sequential(
+            nn.Conv2d(in_channels=num_channels, out_channels=64, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
 
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.ConvTranspose2d(in_channels=64, out_channels=128, kernel_size=(2, 2), stride=(2, 2))
         )
 
-        self.dec_block_1 = nn.Sequential(
+        self.d_block_1 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -91,7 +93,7 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.dec_block_2 = nn.Sequential(
+        self.d_block_2 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -100,7 +102,7 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.dec_block_3 = nn.Sequential(
+        self.d_block_3 = nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
@@ -109,7 +111,7 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=(1, 1)),
         )
 
-        self.dec_upconv_2 = nn.Sequential(
+        self.d_up_conv_2 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=32, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
 
@@ -117,7 +119,7 @@ class Generator(nn.Module):
             nn.ConvTranspose2d(in_channels=32, out_channels=256, kernel_size=(2, 2), stride=(2, 2))
         )
 
-        self.dec_upconv_3 = nn.Sequential(
+        self.d_up_conv_3 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=16, kernel_size=(3, 3), stride=(1, 1)),
             nn.LeakyReLU(),
 
@@ -127,12 +129,12 @@ class Generator(nn.Module):
         )
 
     def forward(self, x):
-        uc_1 = self.dec_upconv_1(x)
-        dblock_1 = self.dec_block_1(uc_1) + uc_1
-        dblock_2 = self.dec_block_2(dblock_1) + dblock_1
-        dblock_3 = self.dec_block_3(dblock_2) + dblock_2
-        uc_2 = self.dec_upconv_2(dblock_3)
-        dec = self.dec_upconv_3(uc_2)
+        uc_1 = self.d_up_conv_1(x)
+        dblock_1 = self.d_block_1(uc_1) + uc_1
+        dblock_2 = self.d_block_2(dblock_1) + dblock_1
+        dblock_3 = self.d_block_3(dblock_2) + dblock_2
+        uc_2 = self.d_up_conv_2(dblock_3)
+        dec = self.d_up_conv_3(uc_2)
 
         return dec
 

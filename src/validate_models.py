@@ -6,6 +6,11 @@ from parameters import *
 
 
 def validate_models(channels):
+    """
+    Validate trained models
+    :param channels: List of compressed channels used
+    :return: None
+    """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     test_loader = test_dataloader()

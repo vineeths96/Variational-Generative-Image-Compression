@@ -4,9 +4,6 @@ from download_data import downloadData
 from VAE_GAN import train
 from validate_models import validate_models
 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 
 def main():
     downloadData()
