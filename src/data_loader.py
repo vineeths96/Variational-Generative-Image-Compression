@@ -18,9 +18,13 @@ class ImageTrainData(Dataset):
         :param train_split: Train Test split ratio
         """
 
-        self.transform = transforms.Compose([transforms.ToTensor(),
-                                             transforms.CenterCrop((HEIGHT, WIDTH)),
-                                             transforms.Normalize(MEAN, STD),])
+        self.transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.CenterCrop((HEIGHT, WIDTH)),
+                transforms.Normalize(MEAN, STD),
+            ]
+        )
         self.image_dir = image_dir
         self.image_list = image_list
         self.train_split = train_split
@@ -48,9 +52,13 @@ class ImageTestData(Dataset):
         :param train_split: Train Test split ratio
         """
 
-        self.transform = transforms.Compose([transforms.ToTensor(),
-                                             transforms.CenterCrop((HEIGHT, WIDTH)),
-                                             transforms.Normalize(MEAN, STD),])
+        self.transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.CenterCrop((HEIGHT, WIDTH)),
+                transforms.Normalize(MEAN, STD),
+            ]
+        )
         self.image_dir = image_dir
         self.image_list = image_list
         self.train_split = train_split

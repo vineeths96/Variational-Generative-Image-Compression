@@ -11,7 +11,8 @@ def validate_models(channels):
     :param channels: List of compressed channels used
     :return: None
     """
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     test_loader = test_dataloader()
     test_batch = next(iter(test_loader)).to(device)
@@ -23,8 +24,12 @@ def validate_models(channels):
         encoder = Encoder(NUM_CHANNELS).to(device)
         generator = Generator(NUM_CHANNELS).to(device)
 
-        encoder.load_state_dict(torch.load(f'../models/encoder_{NUM_CHANNELS}.model', map_location=torch.device('cpu')))
-        generator.load_state_dict(torch.load(f'../models/generator_{NUM_CHANNELS}.model', map_location=torch.device('cpu')))
+        encoder.load_state_dict(
+            torch.load(f"../models/encoder_{NUM_CHANNELS}.model", map_location=torch.device("cpu"))
+        )
+        generator.load_state_dict(
+            torch.load(f"../models/generator_{NUM_CHANNELS}.model", map_location=torch.device("cpu"))
+        )
 
         encoder.eval()
         generator.eval()

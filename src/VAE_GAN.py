@@ -7,34 +7,34 @@ from utils import init_weights, plot_image
 from parameters import *
 
 
-def models():
+def models(channels):
     """
     Creates and initializes the models
     :return: Encoder, Generator, Discriminator
     """
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    encoder = Encoder().to(device)
+    encoder = Encoder(channels).to(device)
     encoder.apply(init_weights)
 
-    generator = Generator().to(device)
+    generator = Generator(channels).to(device)
     generator.apply(init_weights)
 
-    discriminator = Discriminator().to(device)
+    discriminator = Discriminator(channels).to(device)
     discriminator.apply(init_weights)
 
     return encoder, generator, discriminator
 
 
-def train():
+def train(channels):
     """
     Trains the VAE-GAN model
     :return: Encoder, Generator
     """
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    encoder, generator, discriminator = models()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    encoder, generator, discriminator = models(channels)
 
     # Setup the dataloaders
     train_loader = train_dataloader()
@@ -51,7 +51,7 @@ def train():
     discriminator_optimizer = torch.optim.Adam(discriminator.parameters(), lr=LEARNING_RATE, betas=(BETA1, BETA2))
 
     # Loss tracker
-    losses = {model: [] for model in ['encoder', 'generator', 'discriminator']}
+    losses = {model: [] for model in ["encoder", "generator", "discriminator"]}
 
     # Training Loop
     print(f"Starting Training at {datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}")
@@ -66,27 +66,22 @@ def train():
             images = images.to(device)
             fake_images = generator(encoder(images))
 
+            z_real = {"image": images, "encoded_image": encoder(images)}
+            z_fake = {"image": fake_images, "encoded_image": encoder(images)}
+
             ##############################
             ###  Disriminator training ###
             ##############################
             discriminator.zero_grad()
 
             # Real batch with label smoothing
-            z = {}
-            z['image'] = images
-            z['encoded_image'] = encoder(images)
-
             label = torch.empty(images.size(0), device=device).uniform_(1 - SMOOTH, 1)
-            output = discriminator(z).view(-1)
+            output = discriminator(z_fake).view(-1)
             discriminator_loss_real = bce_criterion(output, label)
 
             # Fake batch with label smoothing
-            z = {}
-            z['image'] = fake_images
-            z['encoded_image'] = encoder(images)
-
             label = torch.empty(images.size(0), device=device).uniform_(0, SMOOTH)
-            output = discriminator(z).view(-1)
+            output = discriminator(z_fake).view(-1)
             discriminator_loss_fake = bce_criterion(output, label)
 
             # Update weights
@@ -100,12 +95,8 @@ def train():
             generator.zero_grad()
 
             # Fake batch with label smoothing
-            z = {}
-            z['image'] = fake_images
-            z['encoded_image'] = encoder(images)
-
             label = torch.empty(images.size(0), device=device).uniform_(1 - SMOOTH, 1)
-            output = discriminator(z).view(-1)
+            output = discriminator(z_fake).view(-1)
 
             # Update gradiente
             generator_loss = bce_criterion(output, label) + 2 * l1_criterion(images, fake_images)
@@ -117,12 +108,8 @@ def train():
             encoder.zero_grad()
 
             # Fake batch with label smoothing
-            z = {}
-            z['image'] = fake_images
-            z['encoded_image'] = encoder(images)
-
             label = torch.empty(images.size(0), device=device).uniform_(1 - SMOOTH, 1)
-            output = discriminator(z).view(-1)
+            output = discriminator(z_fake).view(-1)
 
             # Update gradiente
             encoder_loss = bce_criterion(output, label) + 2 * l1_criterion(images, fake_images)
@@ -136,12 +123,15 @@ def train():
             ###   Training Statistics  ###
             ##############################
             if i % LOG_FREQUENCY == 0:
-                print(f'Epoch: {epoch}, Iteration: {i}, Discriminator Loss: {discriminator_loss.item()}, Generator Loss: {generator_loss.item()}, Encoder Loss: {encoder_loss.item()}')
+                print(
+                    f"Epoch: {epoch}, Iteration: {i}, Discriminator Loss: {discriminator_loss.item()}, "
+                    f"Generator Loss: {generator_loss.item()}, Encoder Loss: {encoder_loss.item()}"
+                )
 
             # Track losses
-            losses['encoder'].append(encoder_loss.item())
-            losses['generator'].append(generator_loss.item())
-            losses['discriminator'].append(discriminator_loss.item())
+            losses["encoder"].append(encoder_loss.item())
+            losses["generator"].append(generator_loss.item())
+            losses["discriminator"].append(discriminator_loss.item())
 
             # Plot the original and reconstructed image for test dataset
             if i % VAL_FREQUENCY == 0:

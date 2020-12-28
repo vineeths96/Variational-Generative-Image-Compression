@@ -4,7 +4,7 @@ MEAN = 0.5
 STD = 0.5
 
 BATCH_SIZE = 20
-IMG_DIR = '../input/Flicker8k_Dataset/'
+IMG_DIR = "../input/Flicker8k_Dataset/"
 SPLIT = 0.8
 
 LATENT_DIM = 200
@@ -20,3 +20,5 @@ LOG_FREQUENCY = 10
 VAL_FREQUENCY = 100
 NUM_IMAGES = 1
 NUM_IMAGES_GRID = 5
+
+VALIDATE_CHANNELS = [2, 4, 8, 16, 28]

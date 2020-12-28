@@ -11,7 +11,7 @@ def init_weights(m):
     """
 
     classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
+    if classname.find("Conv") != -1:
         nn.init.normal_(m.weight.data, 0.0, 0.05)
 
 
@@ -52,12 +52,14 @@ def plot_image_grid(test_batch, reconstructed_images, num_images):
     :return: None
     """
 
-    f, ax = plt.subplots(num_images, 2)
+    f, ax = plt.subplots(num_images, len(reconstructed_images) + 1)
 
-    axarr[0, 0].title.set_text('Original \n Image')
-    axarr[0, 1].title.set_text('Reconstructed with \n 43% Compression')
-    axarr[0, 2].title.set_text('Reconstructed with \n 68% Compression')
-    axarr[0, 3].title.set_text('Reconstructed with \n 84% Compression')
+    ax[0, 0].title.set_text("Original \n Image")
+    ax[0, 1].title.set_text("Reconstructed with \n 96% Compression")
+    ax[0, 2].title.set_text("Reconstructed with \n 92% Compression")
+    ax[0, 3].title.set_text("Reconstructed with \n 84% Compression")
+    ax[0, 4].title.set_text("Reconstructed with \n 68% Compression")
+    ax[0, 5].title.set_text("Reconstructed with \n 43% Compression")
 
     for i in range(num_images):
         test_image = (test_batch[i].cpu().detach().permute(1, 2, 0) * STD) + MEAN
@@ -69,5 +71,5 @@ def plot_image_grid(test_batch, reconstructed_images, num_images):
         f.set_figheight(20)
         f.set_figwidth(20)
 
-    plt.savefig('../results/result.png')
+    plt.savefig("../results/result.png")
     plt.show()
