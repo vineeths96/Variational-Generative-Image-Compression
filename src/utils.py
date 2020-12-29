@@ -2,6 +2,7 @@ import os
 import datetime
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from skimage.metrics import structural_similarity, peak_signal_noise_ratio
 from parameters import *
 
 
@@ -95,3 +96,21 @@ def save_images(test_batch, reconstructed_images):
         for channel in reconstructed_images.keys():
             rec_image = (reconstructed_images[channel][i].cpu().detach().permute(1, 2, 0) * STD) + MEAN
             plt.imsave(f"{PATH}/image_{channel}.png", rec_image.numpy())
+
+
+def metrics(firstImage, secondImage):
+    """
+    Calculate the evaluation metrics for the images
+    :param firstImage: First image
+    :param secondImage: Second image
+    :return: Metrics dictionary
+    """
+
+    ssim = structural_similarity(
+        firstImage, secondImage, data_range=firstImage.max() - firstImage.min(), multichannel=True
+    )
+    psnr = peak_signal_noise_ratio(firstImage, secondImage, data_range=firstImage.max() - firstImage.min())
+
+    image_metrics = {"SSIM": ssim, "PSNR": psnr}
+
+    return image_metrics
