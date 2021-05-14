@@ -76,7 +76,7 @@ def train(channels):
 
             # Real batch with label smoothing
             label = torch.empty(images.size(0), device=device).uniform_(1 - SMOOTH, 1)
-            output = discriminator(z_fake).view(-1)
+            output = discriminator(z_real).view(-1)
             discriminator_loss_real = bce_criterion(output, label)
 
             # Fake batch with label smoothing
